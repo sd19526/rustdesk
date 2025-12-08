@@ -56,25 +56,21 @@ class _DesktopHomePageState extends State<DesktopHomePage>
 
   final GlobalKey _childKey = GlobalKey();
 
-  @override
-  Widget build(BuildContext context) {
- super.build(context);
-    final isIncomingOnly = true; // 保持为 true
+@override
+Widget build(BuildContext context) {
+    super.build(context);
+    final isIncomingOnly = true; 
+    
     return _buildBlock(
         child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // 只有在非被控端时才显示远程控制面板
-        if (!isIncomingOnly) buildLeftPane(context),
-        
-        // 只有在非被控端时才显示分割线
-        if (!isIncomingOnly) const VerticalDivider(width: 1),
-        
-        // 始终显示本机信息面板，并让它扩展占据所有空间
-        Expanded(child: buildRightPane(context)),
-      ],
-    ));
-  }
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                // 正确：只保留本机信息面板
+                Expanded(child: buildLeftPane(context)),
+            ],
+        )
+    );
+}
 
   Widget _buildBlock({required Widget child}) {
     return buildRemoteBlock(
@@ -185,12 +181,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     );
   }
 
-  buildRightPane(BuildContext context) {
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: ConnectionPage(),
-    );
-  }
+Widget buildRightPane(BuildContext context) { 
+  // 必须加上返回类型 Widget
+  // 彻底清除远程控制面板
+  return const SizedBox.shrink(); 
+  // return 语句必须在注释外
+}
 
   buildIDBoard(BuildContext context) {
     final model = gFFI.serverModel;
