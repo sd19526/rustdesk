@@ -1,12 +1,6 @@
 name: CI
 
-env:
-# MIN_SUPPORTED_RUST_VERSION: "1.46.0"
-# CICD_INTERMEDIATES_DIR: "_cicd-intermediates"
-  PROJECT_NAME: "rustdesk"
-  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
-# for multiarch gcc compatibility
-  VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
+# 移除顶层 env 块，只保留 name 和 on:
 
 on:
   workflow_dispatch:
@@ -26,65 +20,27 @@ on:
       - "flatpak/**"
 
 jobs:
-# 暂时注释掉这部分被注释的 jobs，以确保主 build job 顺利运行
-# ensure_cargo_fmt:
-#   name: Ensure 'cargo fmt' has been run
-#   runs-on: ubuntu-20.04
-#   steps:
-#   - uses: actions-rs/toolchain@v1
-#     with:
-#       toolchain: stable
-#       default: true
-#       profile: minimal
-#       components: rustfmt
-#   - uses: actions/checkout@v3
-#   - run: cargo fmt -- --check
-
-# min_version:
-#   name: Minimum supported rust version
-#   runs-on: ubuntu-20.04
-#   steps:
-#   - name: Checkout source code
-#     uses: actions/checkout@v3
-#     with:
-#       submodules: recursive
-
-#   - name: Install rust toolchain (v${{ env.MIN_SUPPORTED_RUST_VERSION }})
-#     uses: actions-rs/toolchain@v1
-#     with:
-#       toolchain: ${{ env.MIN_SUPPORTED_RUST_VERSION }}
-#       default: true
-#       profile: minimal
-#       components: clippy
-#   - name: Run clippy (on minimum supported rust version to prevent warnings we can't fix)
-#     uses: actions-rs/cargo@v1
-#     with:
-#       command: clippy
-#       args: --locked --all-targets --all-features -- --allow clippy::unknown_clippy_lints
-#   - name: Run tests
-#     uses: actions-rs/cargo@v1
-#     with:
-#       command: test
-#       args: --locked
+# ... (其他被注释的 jobs 保持不变)
 
   build:
     name: ${{ matrix.job.target }} (${{ matrix.job.os }})
     runs-on: ${{ matrix.job.os }}
+    
+    # 修复：将所有环境变量移到这里，使用标准 2 个空格缩进
+    env:
+      # MIN_SUPPORTED_RUST_VERSION: "1.46.0"
+      # CICD_INTERMEDIATES_DIR: "_cicd-intermediates"
+      PROJECT_NAME: "rustdesk"
+      VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+      # for multiarch gcc compatibility
+      VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
+
     strategy:
       fail-fast: false
       matrix:
         job:
-          # - { target: aarch64-unknown-linux-gnu, os: ubuntu-20.04, use-cross: true }
-          # - { target: arm-unknown-linux-gnueabihf, os: ubuntu-20.04, use-cross: true }
-          # - { target: arm-unknown-linux-musleabihf, os: ubuntu-20.04, use-cross: true }
-          # - { target: i686-pc-windows-msvc, os: windows-2022 }
-          # - { target: i686-unknown-linux-gnu, os: ubuntu-20.04, use-cross: true }
-          # - { target: i686-unknown-linux-musl, os: ubuntu-20.04, use-cross: true }
-          # - { target: x86_64-apple-darwin, os: macos-10.15 }
-          # - { target: x86_64-pc-windows-gnu, os: windows-2022 }
-          # - { target: x86_64-pc-windows-msvc, os: windows-2022 }
+          # ... (job matrix 保持不变)
           - { target: x86_64-unknown-linux-gnu, os: ubuntu-24.04 }
-          # - { target: x86_64-unknown-linux-musl, os: ubuntu-20.04, use-cross: true }
 
     steps:
     - name: Export GitHub Actions cache environment variables
